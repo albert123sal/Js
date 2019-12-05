@@ -70,21 +70,21 @@ var btnPhoto         = $('#photo-btn');
 var contenedorCamara = $('.camara-contenedor');
 
 var lat  = null;
-var lng  = null; 
-var foto = null; 
+var lng  = null;
+var foto = null;
 
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
 //Init de la camara class
-//document.getElementaryId('player'); 
-const camara = new Camara( $('#player')[0] );
- 
+//document.getElementById('player');
+const camara = new Camara ($('#player')[0]);
+
 
 
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML(mensaje, personaje, lat, lng   ) {
+function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
 
     // console.log(mensaje, personaje, lat, lng);
 
@@ -102,27 +102,27 @@ function crearMensajeHTML(mensaje, personaje, lat, lng   ) {
                 <br/>
                 ${ mensaje }
                 `;
-    
-    //if ( foto ) {
-    //    content += `
-    //            <br>
-    //            <img class="foto-mensaje" src="${ foto }">
-    //    `;
-    //}
-        
-    content += `</div>        
+
+    if ( foto ) {
+        content += `
+                <br>
+                <img class="foto-mensaje" src="${ foto }">
+        `;
+    }
+
+    content += `</div>
                 <div class="arrow"></div>
             </div>
         </li>
     `;
 
-    
-    // si existe la latitud y longitud, 
-    // llamamos la funcion para crear el map a
+
+    // si existe la latitud y longitud,
+    // llamamos la funcion para crear el mapa
     if ( lat ) {
         crearMensajeMapa( lat, lng, personaje );
-    } 
-    
+    }
+
     // Borramos la latitud y longitud por si las usó
     lat = null;
     lng = null;
@@ -155,10 +155,10 @@ function crearMensajeMapa(lat, lng, personaje) {
                             src="https://www.google.com/maps/embed/v1/view?key=${ googleMapKey }&center=${ lat },${ lng }&zoom=17" allowfullscreen>
                             </iframe>
                     </div>
-                    
+
                     <div class="arrow"></div>
                 </div>
-            </li> 
+            </li>
     `;
 
     timeline.prepend(content);
@@ -183,7 +183,7 @@ function logIn( ingreso ) {
         avatarSel.removeClass('oculto');
 
         titulo.text('Seleccione Personaje');
-    
+
     }
 
 }
@@ -211,7 +211,7 @@ salirBtn.on('click', function() {
 nuevoBtn.on('click', function() {
 
     modal.removeClass('oculto');
-    modal.animate({ 
+    modal.animate({
         marginTop: '-=1000px',
         opacity: 1
     }, 200 );
@@ -223,7 +223,7 @@ nuevoBtn.on('click', function() {
 cancelarBtn.on('click', function() {
 
     if ( !modal.hasClass('oculto') ) {
-        modal.animate({ 
+        modal.animate({
             marginTop: '+=1000px',
             opacity: 0
          }, 200, function() {
@@ -248,7 +248,8 @@ postBtn.on('click', function() {
         mensaje: mensaje,
         user: usuario,
         lat: lat,
-        lng: lng
+        lng: lng,
+        foto: foto
     };
 
 
@@ -263,11 +264,10 @@ postBtn.on('click', function() {
     .then( res => console.log( 'app.js', res ))
     .catch( err => console.log( 'app.js error:', err ));
 
- 
 
-    crearMensajeHTML( mensaje, usuario, lat, lng,);
-    
+    crearMensajeHTML( mensaje, usuario, lat, lng, foto);
 
+    foto = null;
 });
 
 
@@ -279,9 +279,9 @@ function getMensajes() {
         .then( res => res.json() )
         .then( posts => {
 
-        	console.log(posts );
+            console.log(posts);
 
-            posts.forEach( post => 
+            posts.forEach( post =>
                 crearMensajeHTML( post.mensaje, post.user, post.lat, post.lng, post.foto ));
         });
 
@@ -326,7 +326,7 @@ isOnline();
 function verificaSuscripcion( activadas ) {
 
     if ( activadas ) {
-        
+
         btnActivadas.removeClass('oculto');
         btnDesactivadas.addClass('oculto');
 
@@ -357,14 +357,14 @@ function enviarNotificacion() {
 
 
 function notificarme() {
- 
+
     if ( !window.Notification ) {
         console.log('Este navegador no soporta notificaciones');
         return;
     }
 
     if ( Notification.permission === 'granted' ) {
-        
+
         // new Notification('Hola Mundo! - granted');
         enviarNotificacion();
 
@@ -462,7 +462,7 @@ btnActivadas.on( 'click', function() {
 function mostrarMapaModal(lat, lng) {
 
     $('.modal-mapa').remove();
-    
+
     var content = `
             <div class="modal-mapa">
                 <iframe
@@ -485,22 +485,20 @@ function mostrarMapaModal(lat, lng) {
 btnLocation.on('click', () => {
 
     //console.log('Botón geolocalización');
-    $.mdtoast('Cargando mapa...',{
-    	interaction: true,
-    	interactionTimeout: 2000,
-    	actionText: 'ok',
+    $.mdtoast('Cargando mapa...', {
+      interaction: true ,
+      interactionTimeout: 2000,
+      actionText: 'ok!!!'
+
     });
 
-		navigator.geolocation.getCurrentPosition ( pos => {
-	
-		console.log ( pos );
-		mostrarMapaModal(pos.coords.latitude, pos.coords.longitude);
+      navigator.geolocation.getCurrentPosition ( pos => {
 
-
-		lat = pos.coords.latitude;
-		lng = pos.coords.longitude;
-	
-    });
+	console.log ( pos );
+  mostrarMapaModal(pos.coords.latitude, pos.coords.longitude);
+  lat = pos.coords.latitude;
+  lng = pos.coords.longitude;
+      });
 });
 
 
@@ -511,10 +509,8 @@ btnLocation.on('click', () => {
 btnPhoto.on('click', () => {
 
     console.log('Inicializar camara');
-    contenedorCamara.removeClass('oculto');  
-
+    contenedorCamara.removeClass('oculto');
     camara.encender();
-
 });
 
 
@@ -522,16 +518,11 @@ btnPhoto.on('click', () => {
 btnTomarFoto.on('click', () => {
 
     console.log('Botón tomar foto');
-
-    foto = camara.tomarFoto();
-
+    foto = camara.tomarfoto();
     camara.apagar();
-     
-    console.log(foto);
+    //console.log(foto);
+
 });
 
 
 // Share API
-
-
-
