@@ -23,16 +23,23 @@ router.get('/', function (req, res) {
 
 // Post mensaje
 router.post('/', function (req, res) {
-  
+
+//console.log(req.body.lat);
+//console.log(req.body.lng);
+
 
   const mensaje = {
     mensaje: req.body.mensaje,
-    user: req.body.user
+    user: req.body.user,
+    lat: req.body.latitud,
+    lng: req.body.lng,
+    foto: req.body.foto
+
   };
 
   mensajes.push( mensaje );
 
-  // console.log(mensajes);
+  console.log(mensajes);
 
 
   res.json({
@@ -48,7 +55,7 @@ router.post('/subscribe', (req, res) => {
 
   const suscripcion = req.body;
 
-  
+
   push.addSubscription( suscripcion );
 
 
