@@ -1,60 +1,63 @@
-
-
 class Camara{
 
-	constructor(videoNode){
+  constructor(videoNode){
 
-		this.videoNode = videoNode;
-		console.log('Camara Class init');
-	}
+    this.videoNode = videoNode;
+    console.log('Camara Class init');
 
+  }
 
-	encender(){
+  
+  encender()
+  {
 
-		navigator.mediaDevices.getUserMedia({
-			audio: false,
-			video: { width: 300, height: 300}
+    navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {width: 300 , height: 300}
+    }).then(stream =>{
+      this.videoNode.srcObject = stream;
+      this.stream = stream;
+    });
 
-		}).then( stream=> {
+  }
 
-			this.videoNode.srcObject = stream;
-			this.stream = stream;
+  apagar()
+  {
+    this.videoNode.pause();
 
-		});
-	}
+    if(this.stream){
 
+    this.stream.getTracks()[0].stop();
 
-	apagar(){
+    }
 
-		this.videoNode.pause();
-		if(this.stream){
-		this.stream.getTracks()[0].stop();
-		}
-	}
+  }
 
-	tomarFoto(){
-		//crear un elemento canvas para guardar foto
-		let canvas = document.create Element('canvas');
+  tomarfoto(){
+    //Crear un elemento canvas para renderizar ahí la Foto
 
-		//colocar dimensiones del canvas o video
-		canvas.setAttribute('width', 300 );
-		canvas.setAttribute('height', 300 );
+    let canvas = document.createElement('canvas');
 
-		//pbtener el contexto del canvas
-		let context = canvas.getContext('2d'); //simple imagen  
+    //colocarlas dimenciones igual al elemento del video
 
-		//dibujar la imagen dentro del canvas	
-		context.drawImage( this.videoNode, 0, 0, canvas.width, canvas.height);
+    canvas.setAttribute('width', 300);
+    canvas.setAttribute('height', 300);
 
-		this.foto = context.canvas.toDataURL();
+    //obtener el contexto del canvas
 
-		//limpieza
-		canvas = null;
-		context = null;
+    let context = canvas.getContext('2d'); //una simple imagen
 
-		return this.foto; 
-	}
+    //dibujar la imagen dentro de canvas
 
+    context.drawImage(this.videoNode, 0 , 0, canvas.width, canvas.height);
 
+    this.foto = context.canvas.toDataURL();
 
+    //limpieza
+
+    canvas = null;
+    context = null;
+
+    return this.foto;
+  }
 }

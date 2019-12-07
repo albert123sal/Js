@@ -1,6 +1,6 @@
 ﻿
 var url = window.location.href;
-var swLocation = '/twittor/sw.js';
+var swLocation = '/api/sw.js';
 
 var swReg;
 
@@ -90,6 +90,8 @@ function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
 
     var content =`
     <li class="animated fadeIn fast"
+    	data-user="${ personaje }"
+    	data-mensaje="${ mensaje }"
         data-tipo="mensaje">
 
 
@@ -253,7 +255,7 @@ postBtn.on('click', function() {
     };
 
 
-    fetch('api', {
+    fetch('/api/post.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -275,7 +277,7 @@ postBtn.on('click', function() {
 // Obtener mensajes del servidor
 function getMensajes() {
 
-    fetch('api')
+    fetch('/api')
         .then( res => res.json() )
         .then( posts => {
 
@@ -526,3 +528,43 @@ btnTomarFoto.on('click', () => {
 
 
 // Share API
+
+//if (navigator.share) {
+//	console.log('navegador lo soporta');
+//}else{
+//	console.log('navegador NO lo soporta'); 
+//}
+
+
+timeline.on('click', 'li', function() {
+
+	//console.log('Click en LI');
+	//console.log( $(this) );
+
+	//console.log( $(this).data('tipo') );
+	//console.log( $(this).data('user') );
+
+	let tipo    = $(this).data('tipo'); 
+	let lar     = $(this).data('lat');
+	let lng     = $(this).data('lng');
+	let mensaje = $(this).data('mensaje'); 
+	let user    = $(this).data('user');
+
+	console.log({tipo, lat, lng, mensaje, user }); 
+
+	const shareOpts = {
+		title: user,
+		text: mensaje,
+	};
+
+	if ( tipo === 'mapa' ) {
+		shareOpts.text = 'Mapa';
+		shareOpts.url = `https://www.google.com/maps/@${ lat }, ${lng},15z`;
+
+	}
+
+	navigator.share(shareOpts)
+		.then(() => console.log('Successful share'))
+		.catch((error) => console.log('Error sharing',error));
+
+});
